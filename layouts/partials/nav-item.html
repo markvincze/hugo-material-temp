@@ -1,0 +1,73 @@
+<!-- Determine class according to level -->
+<!-- {% set class = "md-nav__item" %}
+{% if nav_item.active %}
+  {% set class = "md-nav__item md-nav__item--active" %}
+{% endif %} -->
+{{ $currentNode := . }}
+{{ $currentMenuEntry := $.Scratch.Get "currentMenuEntry" }}
+{{ $isCurrent := eq .Permalink ($currentMenuEntry.URL | absURL | printf "%s") }}
+{{ $path := $.Scratch.Get "path" }}
+
+{{ $.Scratch.Set "class" "md-nav__item" }}
+{{ if $isCurrent }}
+  {{ $.Scratch.Set "class" "md-nav__item md-nav__item--active" }}
+{{ end }}
+
+<!-- Main navigation item with nested items -->
+{{ if $currentMenuEntry.HasChildren }}
+  <li class="{{ $.Scratch.Get "class" }} md-nav__item--nested">
+    <!-- Active checkbox expands items contained within nested section -->
+    {{ if $isCurrent }}
+      <input class="md-toggle md-nav__toggle" data-md-toggle="{{ $path }}"
+          type="checkbox" id="{{ $path }}" checked />
+    {{ else }}
+      <input class="md-toggle md-nav__toggle" data-md-toggle="{{ $path }}"
+          type="checkbox" id="{{ $path }}" />
+    {{ end }}
+
+    <!-- Expand active pages -->
+    <label class="md-nav__link" for="{{ $path }}">
+      {{ $currentMenuEntry.Name }}
+    </label>
+    <nav class="md-nav" data-md-component="collapsible"
+        data-md-level="{{ $.Scratch.Get "level" }}">
+      <label class="md-nav__title" for="{{ $path }}">
+        {{ $currentMenuEntry.Name }}
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+
+        <!-- Render nested item list -->
+        {{ $base := $path }}
+        {{ range $elemIndex, $currentMenuEntry.Children }}
+          {{ $.Scratch.Set "currentMenuEntry" . }}
+          {{ $.Scratch.Set "path" (printf "%s-%s" $base $elemIndex) }}
+          {{ $.Scratch.Set "level" (add ($.Scratch.Get "level") 1) }}
+          {{ partial "nav-item" $currentNode }}
+          {{ $.Scratch.Set "level" (add ($.Scratch.Get "level") -1) }}
+        {{ end }}
+
+      </ul>
+
+  </li>
+{{ end }}
+
+
+<!-- Currently active page -->
+{{ if $isCurrent }}
+  <li class="{{ $.Scratch.Get "class" }}">
+    <!-- Active checkbox expands items contained within nested section -->
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc"
+      type="checkbox" id="__toc" />
+    <a href="{{ $currentMenuEntry.URL | relURL}}" title="{{ $currentMenuEntry.Name }}" class="md-nav__link md-nav__link--active">
+      {{ $currentMenuEntry.Pre }}
+      {{ $currentMenuEntry.Name }}
+    </a>
+  </li>
+{{ else }}
+  <li class="{{ .Scratch.Get "class" }}"></li>
+    <a href="{{ $currentMenuEntry.URL | relURL}}" title="{{ $currentMenuEntry.Name }}" class="md-nav__link">
+        {{ $currentMenuEntry.Pre }}
+        {{ $currentMenuEntry.Name }}
+    </a>
+  </li>
+{{ end }}

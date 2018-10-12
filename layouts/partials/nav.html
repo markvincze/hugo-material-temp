@@ -1,0 +1,37 @@
+<nav class="md-nav md-nav--primary" data-md-level="0">
+
+    <!-- Site title -->
+    <label class="md-nav__title md-nav__title--site" for="__drawer">
+      <a href="{{ with .Site.Params.repo_url }}{{ . }}{{ else }}{{ .Site.BaseURL }}{{ end }}"
+          title="{{ .Site.Title }}" class="md-nav__button md-logo">
+        {{ with .Site.Params.logo }}
+          <img src="{{ $.Site.BaseURL }}{{ . }}" width="48" height="48" />
+        {{ end }}
+      </a>
+      {{ .Site.Title }}
+    </label>
+  
+    <!-- Repository containing source -->
+    <!-- {% if config.repo_url %}
+      <div class="md-nav__source">
+        {% include "partials/source.html" %}
+      </div>
+    {% endif %} -->
+  
+    <!-- Render item list -->
+    <ul class="md-nav__list" data-md-scrollfix>
+      {{ $currentNode := . }}
+
+      {{ $.Scratch.Set "loopIndex" 1 }}
+
+      {{ range .Site.Menus.main.ByWeight }}
+        {{ $.Scratch.Set "currentMenuEntry" . }}
+        {{ $.Scratch.Set "path" (printf "nav-%s" (($.Scratch.Get "loopIndex") | string)) }}
+        {{ $.Scratch.Set "level" 1 }}
+
+        {{ partial "nav-item" $currentNode }}
+
+        {{ $.Scratch.Set "loopIndex" (add ($.Scratch.Get "loopIndex") 1) }}
+      {{ end }}
+    </ul>
+  </nav>

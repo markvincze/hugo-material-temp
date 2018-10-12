@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html class="no-js">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>{{ .Title }}{{ if not .IsHome }} - {{ .Site.Title }}{{ end }}</title>
+    {{ .Hugo.Generator }}
+
+    {{ with .Site.Params.description }}
+    <meta name="description" content="{{ . }}">
+    {{ end }}
+    <link rel="canonical" href="{{ .Permalink }}">
+    {{ with .Site.Params.author }}
+    <meta name="author" content="{{ . }}">
+    {{ end }}
+    <link rel="shortcut icon" type="image/x-icon" href="{{ with .Site.Params.favicon }}{{ . | absURL }}{{ else }}{{ "images/favicon.ico" | absURL }}{{ end }}">
+
+    <!-- Theme-related stylesheets -->
+    <link rel="stylesheet" href="{{ "stylesheets/application.css" | absURL }}">
+
+    <!-- Extra color palette -->
+    <link rel="stylesheet" href="{{ "stylesheets/application-palette.css" | absURL }}">
+
+    <!-- JavaScript libraries -->
+    <script src="{{ "javascripts/modernizr.js" | absURL }}"></script>
+
+    <!-- Load fonts from Google -->
+    {{ $text := or .Site.Params.font.text "Roboto" }}
+    {{ $code := or .Site.Params.font.code "Roboto Mono" }}
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family={{ $text }}:400,700|{{ replace  $code " " "+" | safeURL }}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+      body, input {
+        font-family: '{{ $text }}', Helvetica, Arial, sans-serif;
+      }
+      pre, code {
+        font-family: '{{ $code }}', 'Courier New', 'Courier', monospace;
+      }
+    </style>
+
+    <!-- Material icons as iconset -->
+    <link rel="stylesheet" type="text/css" href="{{ "fonts/material-icons.css" | absURL }}">
+
+    <!-- Custom stylesheets -->
+    {{ range .Site.Params.custom_css }}
+    <link rel="stylesheet" href="{{ . | absURL }}">
+    {{ end }}
+  </head>
+
+  <body 
+      data-md-color-primary="{{ .Site.Params.palette.primary }}"
+      data-md-color-accent="{{ .Site.Params.palette.accent }}">
+
+  <!-- Hidden container for inline SVGs -->
+  <svg class="md-svg">
+    <defs>
+    </defs>
+  </svg>
+
+  <!--
+    State toggles - we need to set autocomplete="off" in order to reset the
+    drawer on back button invocation in some browsers
+  -->
+  <input class="md-toggle" data-md-toggle="drawer"
+      type="checkbox" id="__drawer" autocomplete="off" />
+  <input class="md-toggle" data-md-toggle="search"
+      type="checkbox" id="__search" autocomplete="off" />
+
+  <!-- Overlay for expanded drawer -->
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+
+  <!-- Application header -->
+  <header class="header">
+    {{ partial "header" . }}
+  </header>
+
+  <!-- Container, necessary for web-application context -->
+  <div class="md-container">
+
+    <!-- Tabs with outline -->
+
+    <!-- Main container -->
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+
+        <!-- Navigation -->
+
+          <!-- Main navigation -->
+            <div class="md-sidebar md-sidebar--primary"
+                data-md-component="navigation">
+              <div class="md-sidebar__scrollwrap">
+                <div class="md-sidebar__inner">
+                  {{ partial "nav" . }}
+                </div>
+              </div>
+            </div>
+
+          <!-- Table of contents -->
+            <div class="md-sidebar md-sidebar--secondary"
+                data-md-component="toc">
+              <div class="md-sidebar__scrollwrap">
+                <div class="md-sidebar__inner">
+                  {{ partial "toc" . }}
+                </div>
+              </div>
+            </div>
+
+        <!-- Article -->
+        <div class="md-content">
+          <article class="md-content__inner md-typeset">
+
+            <h1>{{ .Title }}</h1>
+            <!-- Content -->
+            {{ .Content }}
+
+          </article>
+        </div>
+      </div>
+    </main>
+
+    <!-- Application footer -->
+    <footer class="footer">
+      {{ partial "footer" . }}
+    </footer>
+  </div>
+
+  <!-- Theme-related JavaScript -->
+    <script src="{{ "javascripts/application.js" | absURL }}"></script>
+
+    <!-- Initialize application -->
+    <script>
+      app.initialize({
+        version: "1.0",
+        url: {
+          base: "{{ $.Site.BaseURL }}"
+        }
+      });
+    </script>
+    {{ range .Site.Params.custom_js }}
+    <script src="{{ . | absURL }}"></script>
+    {{ end }}
+</body>
+</html>
